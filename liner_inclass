@@ -1,0 +1,73 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn import linear_model
+import numpy as np
+df=pd.read_csv('film2.txt',sep=';')
+df=df[['starttime','endtime','box']]
+df=df.dropna()
+df.starttime=pd.to_datetime(df.starttime)
+df.endtime=pd.to_datetime(df.endtime)
+df['allday']=(df.endtime-df.starttime).dt.days+1
+df.box=df.box.astype(float)
+df['meanbox']=df.box/df.allday
+df=df.reset_index(drop=True)
+x=df['allday']
+y=df['meanbox']
+regr=linear_model.LinearRegression()
+regr.fit(x.values.reshape(-1,1),y.values)
+plt.rcParams['font.sans-serif']=['SimHei']
+plt.scatter(x,y,color='k')
+plt.scatter(x.values.reshape(-1,1),regr.predict(x.values.reshape(-1,1)),color='r',linewidth=1,marker='*')
+plt.legend(['origin','predict'],loc=2)
+plt.xlabel('day number')
+plt.ylabel('mean box')
+plt.savefig('ch2_01.jpg',dpi=128)
+plt.show()
+
+plt.close()
+yy=y.values
+xx=x.values
+a=48.80366
+b=-983.0372418
+myyy=a*xx+b
+plt.scatter(x,y,color='k')
+plt.scatter(xx,myyy,color='blue',marker='o',alpha=0.5)
+plt.scatter(x.values.reshape(-1,1),regr.predict(x.values.reshape(-1,1)),color='r',linewidth=1,marker='*')
+plt.legend(['origin','predict','my'],loc=2)
+plt.xlabel('day number')
+plt.ylabel('mean box')
+plt.savefig('ch2_02.jpg',dpi=128)
+plt.close()
+
+
+
+
+
+
+
+from sklearn import linear_model
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+df=pd.read_csv('film2.txt',sep=';')
+df=df[['starttime','endtime','box']]
+df=df.dropna()
+df.starttime=pd.to_datetime(df.starttime)
+df.endtime=pd.to_datetime(df.endtime)
+df['allday']=(df.endtime-df.starttime).dt.days+1
+df.box=df.box.astype(float)
+df['meanbox']=df.box/df.allday
+df=df.reset_index(drop=True)
+x=df['allday']
+y=df['meanbox']
+regr=linear_model.LinearRegression()
+regr.fit(x.values.reshape(-1,1),y.values)
+plt.rcParams['font.sans-serif']=['SimHei']
+plt.scatter(x,y,color='g')
+plt.scatter(x.values.reshape(-1,1),regr.predict(x.values.reshape(-1,1)),color='r',linewidth=1,marker='*')
+plt.legend(['origin','predict'],loc=2)
+plt.xlabel('day number')
+plt.ylabel('mean box')
+plt.savefig('ch2_01.jpg',dpi=128)
+plt.show()
+plt.close()
