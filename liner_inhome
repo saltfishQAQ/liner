@@ -1,0 +1,113 @@
+'''利用pandas讀取salary.csv，保存到mysalary中
+x軸為年份, y軸為工資, 畫出散點圖
+效果如右圖（參考）
+圖片保存為ex2_01.jpg
+'''
+import pandas as pd
+import matplotlib.pyplot as plt
+data = pd.read_csv("salary.csv")
+x=data['Year']
+y=data['Salary']
+plt.scatter(x,y,marker='*')
+plt.savefig('ex2_01.jpg',dpi=128)
+plt.show()
+
+
+
+
+'''對mysalary進行以下處理
+去除空值
+一行數據中，任意一個欄位為空值，刪除該行
+去除重複行
+只比較Year，對於有重複Year的行，只保留第一行，去除其他重複的行
+x軸為年份, y軸為工資, 畫出散點圖。效果如右圖（參考）
+圖片保存為ex2_02.jpg
+'''
+import pandas as pd
+import matplotlib.pyplot as plt
+data = pd.read_csv("salary.csv")
+data1 = data.dropna()
+data2=data1.drop_duplicates(subset=['Year'],ignore_index=True)
+x=data2['Year']
+y=data2['Salary']
+plt.scatter(x,y,marker='*')
+plt.savefig('ex2_02.jpg',dpi=128)
+plt.show()
+
+
+
+
+'''找出mysalary中，年份小於12，工資<120000的行。把它們保存到mysalary1中。'''
+import pandas as pd
+import matplotlib.pyplot as plt
+data = pd.read_csv("salary.csv")
+data1=data[(data.Year<12)&(data.Salary>120000)]
+data1.to_csv('mysalary1.npy')
+
+
+
+'''對mysalary進行以下處理
+將Year以四舍五入的方法取整。提示.round()
+以年份分組，求出每一年的平均工資，保存到meansalary中，meansalary的index為0,1,2,…
+x軸為meansalary的年份, y軸為meansalary的平均工資, 畫出bar圖。效果如右圖（參考）
+圖片保存為ex2_03.jpg
+'''
+import pandas as pd
+import matplotlib.pyplot as plt
+data = pd.read_csv("salary.csv")
+data.Year=round(data.Year)
+meansalary=data.groupby('Year',as_index=False).mean()
+x=meansalary['Year']
+y=meansalary['Salary']
+plt.bar(x,y)
+plt.title('Mean Salary-Year')
+plt.xlabel('year')
+plt.ylabel('mean salary')
+plt.savefig('ex2_03.jpg',dpi=128)
+plt.show()
+
+
+
+
+'''對mysalary進行以下處理
+去除空值
+一行數據中，任意一個欄位為空值，刪除該行
+去除重複行
+只比較Year，對於有重複Year的行，只保留第一行，去除其他重複的行
+x軸為年份, y軸為工資, 進行歸一化minmax_scale
+劃分訓練集和測試集（8:2）train_test_split
+畫出散點圖（訓練集color=gray和測試集color=black ）
+以年份為x，工資為y，使用一元線性回歸進行擬合。畫出擬合出來的直線以及對測試集的預測結果（線的類型‘*-’, color=red）。求出方差。
+圖片保存為ex2_02b.jpg
+'''
+import pandas as pd
+from sklearn.preprocessing import minmax_scale
+from sklearn.model_selection import train_test_split
+from sklearn import linear_model
+import matplotlib.pyplot as plt
+import numpy as np
+data = pd.read_csv("salary.csv")
+
+data1 = data.dropna()
+data2=data1.drop_duplicates(subset=['Year'],ignore_index=True)
+
+x = minmax_scale(data2['Year'])
+y = minmax_scale(data2['Salary'])
+X_train,X_test, y_train, y_test =train_test_split(x,y,test_size=0.2, train_size=0.8)
+
+plt.scatter(X_train,y_train,color='gray')
+plt.scatter(X_test,y_test,color='black')
+
+regr=linear_model.LinearRegression()
+regr.fit(X_test.reshape(-1,1),y_test)
+plt.plot(X_test.reshape(-1,1),regr.predict(X_test.reshape(-1,1)),color='r',linewidth=1,marker='*')
+plt.xlabel('year')
+plt.ylabel('salary')
+arr_var = np.var(regr.predict(X_test.reshape(-1,1)))
+plt.title('variance = %0.3f'%arr_var)
+plt.legend(['pred','train','test'],loc=2)
+plt.savefig('ex2_02b.jpg',dpi=128)
+plt.show()
+
+
+
